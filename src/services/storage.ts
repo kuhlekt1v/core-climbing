@@ -30,7 +30,17 @@ export const StorageService = {
 
   async getStayLoggedIn(): Promise<boolean> {
     const data = await AsyncStorage.getItem(KEYS.STAY_LOGGED_IN);
-    return data ? JSON.parse(data) : false;
+    if (data === null || data === undefined) {
+      return false;
+    }
+    // Ensure proper boolean conversion
+    try {
+      const parsed = JSON.parse(data);
+      return parsed === true;
+    } catch {
+      // Handle string values directly
+      return data === 'true';
+    }
   },
 
   // Workout methods
