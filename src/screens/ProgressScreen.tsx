@@ -42,6 +42,46 @@ export default function ProgressScreen() {
     return { total, thisWeek, avgDuration };
   };
 
+  const getPerformanceStats = () => {
+    let totalExpectedSets = 0;
+    let totalActualSets = 0;
+    let totalExpectedReps = 0;
+    let totalActualReps = 0;
+    let setsCount = 0;
+    let repsCount = 0;
+
+    workouts.forEach(workout => {
+      workout.exercises.forEach(exercise => {
+        if (exercise.expectedSets && exercise.actualSets) {
+          totalExpectedSets += exercise.expectedSets;
+          totalActualSets += exercise.actualSets;
+          setsCount++;
+        }
+        if (exercise.expectedReps && exercise.actualReps) {
+          totalExpectedReps += exercise.expectedReps;
+          totalActualReps += exercise.actualReps;
+          repsCount++;
+        }
+      });
+    });
+
+    const setsCompletion = setsCount > 0 
+      ? Math.round((totalActualSets / totalExpectedSets) * 100)
+      : 0;
+    const repsCompletion = repsCount > 0
+      ? Math.round((totalActualReps / totalExpectedReps) * 100)
+      : 0;
+
+    return {
+      setsCompletion,
+      repsCompletion,
+      totalActualSets,
+      totalExpectedSets,
+      totalActualReps,
+      totalExpectedReps,
+    };
+  };
+
   const getPainData = () => {
     // Get last 7 pain readings
     const recentPain = painLevels
@@ -98,6 +138,7 @@ export default function ProgressScreen() {
   };
 
   const stats = getWorkoutStats();
+  const performance = getPerformanceStats();
   const painData = getPainData();
   const frequencyData = getWorkoutFrequencyData();
   const screenWidth = Dimensions.get('window').width;
@@ -141,6 +182,31 @@ export default function ProgressScreen() {
         </View>
       </View>
 
+      {/* Performance Stats */}
+      {performance.setsCompletion > 0 && (
+        <View style={styles.performanceContainer}>
+          <Text style={styles.sectionTitle}>Performance Overview</Text>
+          <View style={styles.performanceCards}>
+            <View style={styles.performanceCard}>
+              <Text style={styles.performanceLabel}>Sets Completion</Text>
+              <Text style={styles.performanceValue}>{performance.setsCompletion}%</Text>
+              <Text style={styles.performanceDetail}>
+                {performance.totalActualSets} / {performance.totalExpectedSets} sets
+              </Text>
+            </View>
+            {performance.repsCompletion > 0 && (
+              <View style={styles.performanceCard}>
+                <Text style={styles.performanceLabel}>Reps Completion</Text>
+                <Text style={styles.performanceValue}>{performance.repsCompletion}%</Text>
+                <Text style={styles.performanceDetail}>
+                  {performance.totalActualReps} / {performance.totalExpectedReps} reps
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
+
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Workout Frequency (Last 6 Weeks)</Text>
         <LineChart
@@ -175,24 +241,32 @@ export default function ProgressScreen() {
 
       <View style={styles.recentWorkouts}>
         <Text style={styles.sectionTitle}>Recent Workouts</Text>
-        {workouts.slice(0, 10).map((workout) => (
-          <View key={workout.id} style={styles.workoutCard}>
-            <View style={styles.workoutHeader}>
-              <Text style={styles.workoutName}>{workout.name}</Text>
-              <Text style={styles.workoutDate}>
-                {new Date(workout.date).toLocaleDateString()}
+        {workouts.slice(0, 10).map((workout) => {
+          const completedExercises = workout.exercises.filter(e => e.completed).length;
+          const totalExercises = workout.exercises.length;
+          
+          return (
+            <View key={workout.id} style={styles.workoutCard}>
+              <View style={styles.workoutHeader}>
+                <Text style={styles.workoutName}>{workout.name}</Text>
+                <Text style={styles.workoutDate}>
+                  {new Date(workout.date).toLocaleDateString()}
+                </Text>
+              </View>
+              <Text style={styles.workoutExercises}>
+                Exercises: {completedExercises} / {totalExercises} completed
+              </Text>
+              {workout.painBefore && (
+                <Text style={styles.painInfo}>
+                  Pain: {workout.painBefore.level} → {workout.painAfter?.level || 'N/A'}
+                </Text>
+              )}
+              <Text style={styles.workoutDuration}>
+                Duration: {Math.round((workout.totalDuration || 0) / 60)} min
               </Text>
             </View>
-            {workout.painBefore && (
-              <Text style={styles.painInfo}>
-                Pain: {workout.painBefore.level} → {workout.painAfter?.level || 'N/A'}
-              </Text>
-            )}
-            <Text style={styles.workoutDuration}>
-              Duration: {Math.round((workout.totalDuration || 0) / 60)} min
-            </Text>
-          </View>
-        ))}
+          );
+        })}
       </View>
     </ScrollView>
   );
@@ -247,6 +321,43 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     textAlign: 'center',
+  },
+  performanceContainer: {
+    margin: 20,
+    marginTop: 0,
+  },
+  performanceCards: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  performanceCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 15,
+    marginHorizontal: 5,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  performanceLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  performanceValue: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginBottom: 5,
+  },
+  performanceDetail: {
+    fontSize: 12,
+    color: '#999',
   },
   chartContainer: {
     backgroundColor: '#fff',
@@ -311,6 +422,11 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   painInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 3,
+  },
+  workoutExercises: {
     fontSize: 14,
     color: '#666',
     marginBottom: 3,
