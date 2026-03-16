@@ -106,10 +106,17 @@ export default function WorkoutSessionScreen({ route, navigation }: any) {
     const updatedExercises = [...workout.exercises];
     updatedExercises[currentExerciseIndex].completed = true;
     
-    // Save actual performance
-    updatedExercises[currentExerciseIndex].actualSets = actualSets ? parseInt(actualSets) : undefined;
-    updatedExercises[currentExerciseIndex].actualReps = actualReps ? parseInt(actualReps) : undefined;
-    updatedExercises[currentExerciseIndex].actualDuration = actualDuration ? parseInt(actualDuration) : undefined;
+    // Save actual performance with validation
+    const parsedSets = actualSets ? parseInt(actualSets, 10) : undefined;
+    const parsedReps = actualReps ? parseInt(actualReps, 10) : undefined;
+    const parsedDuration = actualDuration ? parseInt(actualDuration, 10) : undefined;
+    
+    updatedExercises[currentExerciseIndex].actualSets = 
+      parsedSets && !isNaN(parsedSets) ? parsedSets : undefined;
+    updatedExercises[currentExerciseIndex].actualReps = 
+      parsedReps && !isNaN(parsedReps) ? parsedReps : undefined;
+    updatedExercises[currentExerciseIndex].actualDuration = 
+      parsedDuration && !isNaN(parsedDuration) ? parsedDuration : undefined;
     updatedExercises[currentExerciseIndex].notes = exerciseNotes || undefined;
 
     const updatedWorkout = {

@@ -143,7 +143,7 @@ export default function WorkoutListScreen({ navigation }: any) {
         description: 'Lower body strength',
         sets: 4,
         reps: 8,
-        category: 'lower-body-push',
+        category: 'strength-training',
         dayOfWeek: 'tuesday',
         phase: 1,
         instructions: [
@@ -160,7 +160,7 @@ export default function WorkoutListScreen({ navigation }: any) {
         description: 'Antagonist push exercise',
         sets: 4,
         reps: 10,
-        category: 'lower-body-push',
+        category: 'strength-training',
         dayOfWeek: 'tuesday',
         phase: 1,
         instructions: [
@@ -176,7 +176,7 @@ export default function WorkoutListScreen({ navigation }: any) {
         description: 'Single leg strength',
         sets: 3,
         reps: 8,
-        category: 'lower-body-push',
+        category: 'strength-training',
         dayOfWeek: 'tuesday',
         phase: 1,
         instructions: [
@@ -192,7 +192,7 @@ export default function WorkoutListScreen({ navigation }: any) {
         description: 'Horizontal pulling strength',
         sets: 3,
         reps: 12,
-        category: 'lower-body-push',
+        category: 'strength-training',
         dayOfWeek: 'tuesday',
         phase: 1,
         instructions: [
@@ -208,7 +208,7 @@ export default function WorkoutListScreen({ navigation }: any) {
         description: 'Grip and core endurance',
         sets: 3,
         duration: 40,
-        category: 'lower-body-push',
+        category: 'strength-training',
         dayOfWeek: 'tuesday',
         phase: 1,
         instructions: [
@@ -365,8 +365,8 @@ export default function WorkoutListScreen({ navigation }: any) {
         return 'Active Recovery';
       case 'power-finger':
         return 'Power & Finger Strength';
-      case 'lower-body-push':
-        return 'Lower Body & Push';
+      case 'strength-training':
+        return 'Strength Training';
       default:
         return category;
     }

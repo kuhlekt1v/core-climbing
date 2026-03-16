@@ -23,7 +23,7 @@ export interface Exercise {
   sets?: number;
   reps?: number;
   duration?: number; // in seconds
-  category: 'core-stability' | 'climbing-booster' | 'active-recovery' | 'power-finger' | 'lower-body-push';
+  category: 'core-stability' | 'climbing-booster' | 'active-recovery' | 'power-finger' | 'strength-training';
   dayOfWeek?: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
   phase: 1 | 2 | 3;
   instructions: string[];

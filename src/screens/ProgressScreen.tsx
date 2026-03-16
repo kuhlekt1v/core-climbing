@@ -65,10 +65,10 @@ export default function ProgressScreen() {
       });
     });
 
-    const setsCompletion = setsCount > 0 
+    const setsCompletion = setsCount > 0 && totalExpectedSets > 0
       ? Math.round((totalActualSets / totalExpectedSets) * 100)
       : 0;
-    const repsCompletion = repsCount > 0
+    const repsCompletion = repsCount > 0 && totalExpectedReps > 0
       ? Math.round((totalActualReps / totalExpectedReps) * 100)
       : 0;
 

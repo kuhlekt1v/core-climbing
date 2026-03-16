@@ -23,17 +23,25 @@ The easiest way to run Core Climbing on your local network is using Expo's devel
 
 ### Option 2: Building Standalone App (Recommended for Production)
 
-For a standalone app that doesn't require the development server:
+For a standalone app that doesn't require the development server, use EAS Build:
 
 ```bash
-# For Android
-expo build:apk
+# Install EAS CLI
+npm install -g eas-cli
 
-# For iOS (requires Mac with Xcode)
-expo build:ios
+# Configure EAS
+eas build:configure
+
+# Build for Android
+eas build --platform android
+
+# Build for iOS (requires Mac with Xcode)
+eas build --platform ios
 ```
 
 Install the built app on your devices. Data will be stored locally on each device.
+
+> **Note**: The legacy `expo build` commands have been deprecated. Use EAS Build instead.
 
 ## Setting Up Data Sync (Future Enhancement)
 
