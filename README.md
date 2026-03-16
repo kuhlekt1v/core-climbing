@@ -8,11 +8,16 @@ A cross-platform mobile workout application focused on sciatica relief and core 
 
 - **Mobile-First Design**: Built with Expo and React Native for iOS, Android, and Web
 - **Workout Tracking**: Track exercises with sets, reps, and duration during each workout
+- **Actual vs Expected Tracking**: Log actual performance against expected values for sets/reps/duration
 - **Stopwatch Timer**: Built-in timer that can be started, stopped, and adjusted during workouts
-- **Progress Tracking**: View graphs and reports of your recovery journey over time
+- **Progress Tracking**: View graphs and reports of your recovery journey over time, including completion percentages
 - **Pain Level Recording**: Record pain levels before and after each workout session
 - **Data Persistence**: All data stored locally using AsyncStorage
+- **Self-Hosting Support**: Can be configured for local network use or cloud sync (see [SELF-HOSTING.md](SELF-HOSTING.md))
 - **Authentication**: Secure login with "stay logged in" option
+- **Weekly Workout Schedule**:
+  - Monday: Power & Finger Strength (Hangboard Circuit, Limit Bouldering)
+  - Tuesday: Core Stability & Strength A (Goblet Squat, Bench Press, Ring Rows, etc.)
 - **3-Phase Program**:
   - Phase 1: Calm the Nerve & Build Foundation (Weeks 1-2)
   - Phase 2: Add Climbing-Specific Strength (Weeks 3-4)
@@ -83,10 +88,13 @@ core-climbing/
 
 1. **Sign Up/Login**: Create an account or login to access your workouts
 2. **Select Phase**: Choose your current recovery phase (1, 2, or 3)
-3. **Start Workout**: Select a workout routine and begin exercising
-4. **Track Progress**: Use the stopwatch and record your sets/reps
-5. **Record Pain Levels**: Log pain before and after each session
-6. **View Progress**: Check your graphs and workout history
+3. **Choose Day**: Select Monday (Power & Finger) or Tuesday (Core & Strength) workouts, or browse by category
+4. **Start Workout**: Begin your workout session with the built-in timer
+5. **Track Actual Performance**: Log the actual sets/reps/duration you completed for each exercise
+6. **Record Pain Levels**: Log pain levels (0-10 scale) before and after each session
+7. **View Progress**: Check your performance stats, completion percentages, and workout history
+
+For self-hosting on your local network, see [SELF-HOSTING.md](SELF-HOSTING.md).
 
 ## Development
 
@@ -94,12 +102,15 @@ This app was developed using an agentic approach, following the requirements spe
 
 ## Future Enhancements
 
-- Cloud sync with Supabase or similar service
+- Cloud sync with Supabase or Firebase (see SELF-HOSTING.md for setup)
+- Automatic server discovery on local network
+- Web interface for desktop viewing
 - Custom workout routines
 - Video demonstrations for exercises
 - Social features and community support
-- Export workout data
+- Automated data export/backup
 - Notifications and reminders
+- Offline-first sync capability
 
 ## License
 
