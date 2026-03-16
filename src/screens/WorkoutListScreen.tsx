@@ -35,7 +35,191 @@ export default function WorkoutListScreen({ navigation }: any) {
 
   const getDefaultExercises = (): Exercise[] => {
     return [
-      // Phase 1 - Core Stability
+      // Monday – Power & Finger Strength
+      {
+        id: 'mon-1',
+        name: 'Climbing Warm Up / Light Climbing',
+        description: 'Easy climbing to warm up muscles and joints',
+        sets: 1,
+        duration: 600, // 10 minutes
+        category: 'power-finger',
+        dayOfWeek: 'monday',
+        phase: 1,
+        instructions: [
+          'Start with easy routes',
+          'Focus on movement quality',
+          'Gradually increase difficulty',
+          'Listen to your body',
+        ],
+      },
+      {
+        id: 'mon-2a',
+        name: 'Repeaters',
+        description: 'Hangboard Circuit - Repeaters',
+        sets: 5,
+        reps: 6,
+        duration: 7,
+        restSeconds: 3,
+        category: 'power-finger',
+        dayOfWeek: 'monday',
+        phase: 1,
+        instructions: [
+          '7 seconds on, 3 seconds off',
+          '6 reps per set',
+          '3-5 sets total',
+          'Rest 2-3 minutes between sets',
+        ],
+      },
+      {
+        id: 'mon-2b',
+        name: 'Weighted Hang',
+        description: 'Hangboard Circuit - Weighted Hang',
+        sets: 5,
+        duration: 10,
+        restSeconds: 120,
+        category: 'power-finger',
+        dayOfWeek: 'monday',
+        phase: 1,
+        instructions: [
+          '10 second hang',
+          '2 minute rest between sets',
+          '5 sets total',
+          'Add weight as appropriate',
+        ],
+        weight: 0,
+      },
+      {
+        id: 'mon-2c',
+        name: 'Power Endurance Sequence',
+        description: 'Hangboard Circuit - Power Endurance',
+        sets: 6,
+        duration: 8,
+        restSeconds: 15,
+        category: 'power-finger',
+        dayOfWeek: 'monday',
+        phase: 1,
+        instructions: [
+          '8 seconds each: medium crimp, sloper, pinch',
+          '15 second rest between grips',
+          '5-6 sets total',
+          'Maintain good form',
+        ],
+      },
+      {
+        id: 'mon-3',
+        name: 'Limit Bouldering Attempts',
+        description: 'Work on maximum difficulty boulders',
+        sets: 1,
+        reps: 5,
+        category: 'power-finger',
+        dayOfWeek: 'monday',
+        phase: 1,
+        instructions: [
+          'Choose problems at or near your limit',
+          'Focus on quality attempts',
+          'Rest fully between attempts',
+          'Stop before fatigue',
+        ],
+      },
+      // Tuesday – Core Stability & Strength A
+      {
+        id: 'tue-1',
+        name: 'Core Stability',
+        description: 'General core stability work',
+        sets: 3,
+        reps: 10,
+        category: 'core-stability',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Focus on controlled movements',
+          'Maintain neutral spine',
+          'Breathe throughout',
+        ],
+      },
+      {
+        id: 'tue-2a',
+        name: 'Goblet Squat',
+        description: 'Lower body strength',
+        sets: 4,
+        reps: 8,
+        category: 'lower-body-push',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Hold weight at chest',
+          'Squat to parallel or below',
+          'Keep chest up',
+          'Drive through heels',
+        ],
+        weight: 0,
+      },
+      {
+        id: 'tue-2b',
+        name: 'Bench Press / Ring Pushups',
+        description: 'Antagonist push exercise',
+        sets: 4,
+        reps: 10,
+        category: 'lower-body-push',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Lower with control',
+          'Full range of motion',
+          'Maintain tension throughout',
+          'Choose appropriate variation',
+        ],
+      },
+      {
+        id: 'tue-2c',
+        name: 'Bulgarian Split Squat',
+        description: 'Single leg strength',
+        sets: 3,
+        reps: 8,
+        category: 'lower-body-push',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Rear foot elevated',
+          '8 reps each leg',
+          'Keep torso upright',
+          'Control the descent',
+        ],
+      },
+      {
+        id: 'tue-2d',
+        name: 'Ring Rows',
+        description: 'Horizontal pulling strength',
+        sets: 3,
+        reps: 12,
+        category: 'lower-body-push',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Body straight from head to heels',
+          'Pull chest to rings',
+          'Control the return',
+          'Adjust angle for difficulty',
+        ],
+      },
+      {
+        id: 'tue-2e',
+        name: 'Farmer Carry',
+        description: 'Grip and core endurance',
+        sets: 3,
+        duration: 40,
+        category: 'lower-body-push',
+        dayOfWeek: 'tuesday',
+        phase: 1,
+        instructions: [
+          'Hold heavy weights at sides',
+          'Walk for 30-40 seconds',
+          'Keep shoulders back',
+          'Maintain upright posture',
+        ],
+        weight: 0,
+      },
+      // Keep some legacy exercises for other phases/days
       {
         id: '1',
         name: 'Dead Bug',
@@ -128,8 +312,13 @@ export default function WorkoutListScreen({ navigation }: any) {
     ];
   };
 
-  const startWorkout = async (category: string) => {
-    const categoryExercises = exercises.filter(e => e.category === category);
+  const startWorkout = async (category: string, dayOfWeek?: string) => {
+    let categoryExercises = exercises.filter(e => e.category === category);
+    
+    // If dayOfWeek is specified, filter by that as well
+    if (dayOfWeek) {
+      categoryExercises = categoryExercises.filter(e => e.dayOfWeek === dayOfWeek);
+    }
     
     if (categoryExercises.length === 0) {
       Alert.alert('No Exercises', 'No exercises found for this category');
@@ -139,16 +328,22 @@ export default function WorkoutListScreen({ navigation }: any) {
     const workoutExercises: WorkoutExercise[] = categoryExercises.map(e => ({
       id: `${Date.now()}-${e.id}`,
       exerciseId: e.id,
-      sets: e.sets || 3,
-      reps: e.reps,
-      duration: e.duration,
+      expectedSets: e.sets || 3,
+      expectedReps: e.reps,
+      expectedDuration: e.duration,
+      actualSets: undefined,
+      actualReps: undefined,
+      actualDuration: undefined,
       completed: false,
+      weight: e.weight,
     }));
 
     const workout: Workout = {
       id: Date.now().toString(),
       userId: user?.id || '',
-      name: `${category.replace('-', ' ').toUpperCase()} - Phase ${selectedPhase}`,
+      name: dayOfWeek 
+        ? `${dayOfWeek.toUpperCase()} - ${category.replace('-', ' ').toUpperCase()}`
+        : `${category.replace('-', ' ').toUpperCase()} - Phase ${selectedPhase}`,
       date: new Date(),
       exercises: workoutExercises,
       totalDuration: 0,
@@ -163,11 +358,15 @@ export default function WorkoutListScreen({ navigation }: any) {
   const getCategoryName = (category: string) => {
     switch (category) {
       case 'core-stability':
-        return 'Core Stability Routine';
+        return 'Core Stability';
       case 'climbing-booster':
         return 'Climbing Booster';
       case 'active-recovery':
         return 'Active Recovery';
+      case 'power-finger':
+        return 'Power & Finger Strength';
+      case 'lower-body-push':
+        return 'Lower Body & Push';
       default:
         return category;
     }
@@ -178,11 +377,66 @@ export default function WorkoutListScreen({ navigation }: any) {
     return uniqueCategories;
   };
 
+  const getDayWorkouts = () => {
+    const dayWorkouts: { [key: string]: Exercise[] } = {};
+    
+    exercises.forEach(exercise => {
+      if (exercise.dayOfWeek) {
+        if (!dayWorkouts[exercise.dayOfWeek]) {
+          dayWorkouts[exercise.dayOfWeek] = [];
+        }
+        dayWorkouts[exercise.dayOfWeek].push(exercise);
+      }
+    });
+    
+    return dayWorkouts;
+  };
+
+  const getDayName = (day: string) => {
+    return day.charAt(0).toUpperCase() + day.slice(1);
+  };
+
+  const startDayWorkout = async (day: string) => {
+    const dayExercises = exercises.filter(e => e.dayOfWeek === day);
+    
+    if (dayExercises.length === 0) {
+      Alert.alert('No Exercises', 'No exercises found for this day');
+      return;
+    }
+
+    const workoutExercises: WorkoutExercise[] = dayExercises.map(e => ({
+      id: `${Date.now()}-${e.id}`,
+      exerciseId: e.id,
+      expectedSets: e.sets || 3,
+      expectedReps: e.reps,
+      expectedDuration: e.duration,
+      actualSets: undefined,
+      actualReps: undefined,
+      actualDuration: undefined,
+      completed: false,
+      weight: e.weight,
+    }));
+
+    const workout: Workout = {
+      id: Date.now().toString(),
+      userId: user?.id || '',
+      name: `${getDayName(day)} Workout`,
+      date: new Date(),
+      exercises: workoutExercises,
+      totalDuration: 0,
+      phase: selectedPhase,
+      completed: false,
+    };
+
+    await StorageService.saveWorkout(workout);
+    navigation.navigate('WorkoutSession', { workoutId: workout.id });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Workout Programs</Text>
-        <Text style={styles.subtitle}>Select your current phase</Text>
+        <Text style={styles.subtitle}>Choose a workout day or browse by category</Text>
       </View>
 
       <View style={styles.phaseSelector}>
@@ -207,6 +461,43 @@ export default function WorkoutListScreen({ navigation }: any) {
         ))}
       </View>
 
+      {/* Weekly Schedule */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Weekly Schedule</Text>
+      </View>
+      {Object.entries(getDayWorkouts()).map(([day, dayExercises]) => (
+        <View key={day} style={styles.categoryCard}>
+          <Text style={styles.categoryTitle}>{getDayName(day)}</Text>
+          <Text style={styles.categorySubtitle}>
+            {dayExercises.length} exercises
+          </Text>
+          
+          <View style={styles.exercisesList}>
+            {dayExercises.map((exercise) => (
+              <View key={exercise.id} style={styles.exerciseItem}>
+                <Text style={styles.exerciseName}>{exercise.name}</Text>
+                <Text style={styles.exerciseDetails}>
+                  {exercise.sets} sets
+                  {exercise.reps && ` × ${exercise.reps} reps`}
+                  {exercise.duration && ` × ${exercise.duration}s`}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={() => startDayWorkout(day)}
+          >
+            <Text style={styles.startButtonText}>Start {getDayName(day)} Workout</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+
+      {/* Category-based workouts */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Browse by Category</Text>
+      </View>
       <View style={styles.categoriesContainer}>
         {getCategories().map((category) => (
           <View key={category} style={styles.categoryCard}>
@@ -218,6 +509,7 @@ export default function WorkoutListScreen({ navigation }: any) {
             <View style={styles.exercisesList}>
               {exercises
                 .filter(e => e.category === category)
+                .slice(0, 3) // Show first 3 exercises
                 .map((exercise) => (
                   <View key={exercise.id} style={styles.exerciseItem}>
                     <Text style={styles.exerciseName}>{exercise.name}</Text>
@@ -293,6 +585,17 @@ const styles = StyleSheet.create({
   },
   categoriesContainer: {
     padding: 20,
+    paddingTop: 0,
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    backgroundColor: '#f5f5f5',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   categoryCard: {
     backgroundColor: '#fff',

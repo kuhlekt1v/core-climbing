@@ -23,19 +23,26 @@ export interface Exercise {
   sets?: number;
   reps?: number;
   duration?: number; // in seconds
-  category: 'core-stability' | 'climbing-booster' | 'active-recovery';
+  category: 'core-stability' | 'climbing-booster' | 'active-recovery' | 'power-finger' | 'lower-body-push';
+  dayOfWeek?: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
   phase: 1 | 2 | 3;
   instructions: string[];
+  weight?: number; // for weighted exercises
+  restSeconds?: number; // rest time between sets
 }
 
 export interface WorkoutExercise {
   id: string;
   exerciseId: string;
-  sets: number;
-  reps?: number;
-  duration?: number;
+  expectedSets: number;
+  expectedReps?: number;
+  expectedDuration?: number;
+  actualSets?: number;
+  actualReps?: number;
+  actualDuration?: number;
   completed: boolean;
   notes?: string;
+  weight?: number;
 }
 
 export interface Workout {

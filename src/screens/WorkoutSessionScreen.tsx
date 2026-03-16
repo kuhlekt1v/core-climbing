@@ -22,6 +22,12 @@ export default function WorkoutSessionScreen({ route, navigation }: any) {
   const [painAfter, setPainAfter] = useState<number>(0);
   const [painNotes, setPainNotes] = useState('');
   const [showPainInput, setShowPainInput] = useState<'before' | 'after' | null>('before');
+  
+  // Track actual performance
+  const [actualSets, setActualSets] = useState<string>('');
+  const [actualReps, setActualReps] = useState<string>('');
+  const [actualDuration, setActualDuration] = useState<string>('');
+  const [exerciseNotes, setExerciseNotes] = useState<string>('');
 
   useEffect(() => {
     loadWorkout();
@@ -99,6 +105,12 @@ export default function WorkoutSessionScreen({ route, navigation }: any) {
 
     const updatedExercises = [...workout.exercises];
     updatedExercises[currentExerciseIndex].completed = true;
+    
+    // Save actual performance
+    updatedExercises[currentExerciseIndex].actualSets = actualSets ? parseInt(actualSets) : undefined;
+    updatedExercises[currentExerciseIndex].actualReps = actualReps ? parseInt(actualReps) : undefined;
+    updatedExercises[currentExerciseIndex].actualDuration = actualDuration ? parseInt(actualDuration) : undefined;
+    updatedExercises[currentExerciseIndex].notes = exerciseNotes || undefined;
 
     const updatedWorkout = {
       ...workout,
@@ -110,6 +122,11 @@ export default function WorkoutSessionScreen({ route, navigation }: any) {
 
     if (currentExerciseIndex < exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
+      // Reset actual performance inputs for next exercise
+      setActualSets('');
+      setActualReps('');
+      setActualDuration('');
+      setExerciseNotes('');
     } else {
       setShowPainInput('after');
     }
@@ -315,19 +332,65 @@ export default function WorkoutSessionScreen({ route, navigation }: any) {
         </Text>
 
         <View style={styles.exerciseDetails}>
-          <Text style={styles.detailsText}>
-            Sets: {currentWorkoutExercise?.sets || 0}
-          </Text>
-          {currentWorkoutExercise?.reps && (
+          <View style={styles.expectedActualContainer}>
+            <Text style={styles.detailsLabel}>Expected:</Text>
             <Text style={styles.detailsText}>
-              Reps: {currentWorkoutExercise.reps}
+              {currentWorkoutExercise?.expectedSets || 0} sets
+              {currentWorkoutExercise?.expectedReps && ` × ${currentWorkoutExercise.expectedReps} reps`}
+              {currentWorkoutExercise?.expectedDuration && ` × ${currentWorkoutExercise.expectedDuration}s`}
             </Text>
-          )}
-          {currentWorkoutExercise?.duration && (
-            <Text style={styles.detailsText}>
-              Duration: {currentWorkoutExercise.duration}s
-            </Text>
-          )}
+          </View>
+        </View>
+
+        <View style={styles.actualInputContainer}>
+          <Text style={styles.actualInputLabel}>Log Your Performance:</Text>
+          
+          <View style={styles.inputRow}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Sets Completed:</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={`${currentWorkoutExercise?.expectedSets || 0}`}
+                value={actualSets}
+                onChangeText={setActualSets}
+                keyboardType="numeric"
+              />
+            </View>
+            
+            {currentWorkoutExercise?.expectedReps && (
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Reps:</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={`${currentWorkoutExercise.expectedReps}`}
+                  value={actualReps}
+                  onChangeText={setActualReps}
+                  keyboardType="numeric"
+                />
+              </View>
+            )}
+            
+            {currentWorkoutExercise?.expectedDuration && (
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Duration (s):</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={`${currentWorkoutExercise.expectedDuration}`}
+                  value={actualDuration}
+                  onChangeText={setActualDuration}
+                  keyboardType="numeric"
+                />
+              </View>
+            )}
+          </View>
+
+          <TextInput
+            style={styles.notesInput}
+            placeholder="Notes about this exercise (optional)"
+            value={exerciseNotes}
+            onChangeText={setExerciseNotes}
+            multiline
+          />
         </View>
 
         <View style={styles.instructionsContainer}>
@@ -454,17 +517,58 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   exerciseDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     marginBottom: 20,
     padding: 15,
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
   },
+  expectedActualContainer: {
+    marginBottom: 5,
+  },
+  detailsLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 5,
+  },
   detailsText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
+  },
+  actualInputContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#e3f2fd',
+    borderRadius: 8,
+  },
+  actualInputLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  inputGroup: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 8,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   instructionsContainer: {
     marginBottom: 20,
