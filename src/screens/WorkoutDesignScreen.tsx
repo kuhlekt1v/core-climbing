@@ -76,6 +76,12 @@ export default function WorkoutDesignScreen({ navigation, route }: Props) {
       return;
     }
 
+    const invalidSets = validExercises.some((ex) => ex.sets < 1);
+    if (invalidSets) {
+      Alert.alert('Validation', 'Each exercise must have at least 1 set.');
+      return;
+    }
+
     const workout = {
       id: existing?.id ?? generateId(),
       name: trimmedName,
@@ -125,9 +131,12 @@ export default function WorkoutDesignScreen({ navigation, route }: Props) {
             style={styles.smallInput}
             keyboardType="number-pad"
             value={item.sets > 0 ? String(item.sets) : ''}
-            onChangeText={(text) =>
-              updateExercise(item.id, { sets: parseIntOrNull(text) ?? 0 })
-            }
+            onChangeText={(text) => {
+              const val = parseIntOrNull(text);
+              updateExercise(item.id, {
+                sets: val !== null && val > 0 ? val : 0,
+              });
+            }}
           />
         </View>
 
