@@ -21,9 +21,13 @@ function SeedWorkouts({
   children: React.ReactNode;
 }) {
   const { addWorkout } = useWorkouts();
+  const seeded = React.useRef(false);
   React.useEffect(() => {
-    workouts.forEach((w) => addWorkout(w));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!seeded.current) {
+      seeded.current = true;
+      workouts.forEach((w) => addWorkout(w));
+    }
+  }, [workouts, addWorkout]);
   return <>{children}</>;
 }
 
