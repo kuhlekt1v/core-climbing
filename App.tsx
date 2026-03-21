@@ -1,30 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { WorkoutProvider } from './src/context/WorkoutContext';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Core Climbing</Text>
-      <Text style={styles.subtitle}>Sciatica Relief & Core Conditioning</Text>
-      <StatusBar style="auto" />
-    </View>
+    <WorkoutProvider>
+      <AppNavigator />
+      <StatusBar style="light" />
+    </WorkoutProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
