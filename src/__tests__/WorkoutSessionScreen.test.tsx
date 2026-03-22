@@ -302,25 +302,38 @@ describe('WorkoutSessionScreen', () => {
     });
   });
 
-  it('adjusts default rest time', async () => {
+  it('adjusts active rest time', async () => {
     renderSessionScreen('w1', [sampleWorkout]);
 
     await waitFor(() => {
-      expect(screen.getByText('Default Rest Time: 45s')).toBeTruthy();
+      expect(screen.getByText('Pull-ups')).toBeTruthy();
+    });
+
+    // Log a set to trigger rest timer
+    const repsInput = screen.getByPlaceholderText('Expected: 8');
+    fireEvent.changeText(repsInput, '8');
+
+    const logButton = screen.getByText('Log Set');
+    fireEvent.press(logButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Adjust Active Rest Time')).toBeTruthy();
+      expect(screen.getByText('0:45')).toBeTruthy();
     });
 
     const plusButton = screen.getByText('+ 5s');
     fireEvent.press(plusButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Default Rest Time: 50s')).toBeTruthy();
+      expect(screen.getByText('0:50')).toBeTruthy();
     });
 
     const minusButton = screen.getByText('- 5s');
     fireEvent.press(minusButton);
+    fireEvent.press(minusButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Default Rest Time: 45s')).toBeTruthy();
+      expect(screen.getByText('0:40')).toBeTruthy();
     });
   });
 

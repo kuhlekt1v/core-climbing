@@ -33,6 +33,14 @@ export default function WorkoutSessionScreen({ route, navigation }: Props) {
 
   const workout = workouts.find((w) => w.id === workoutId);
 
+  // Disable back navigation during active workout
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+      gestureEnabled: false,
+    });
+  }, [navigation]);
+
   useEffect(() => {
     if (workout && !activeSession) {
       startSession(workout);
@@ -173,7 +181,7 @@ export default function WorkoutSessionScreen({ route, navigation }: Props) {
   }, [cancelSession, navigation]);
 
   const adjustRestTime = (delta: number) => {
-    setDefaultRestTime((prev) => Math.max(5, prev + delta));
+    setRestTimeRemaining((prev) => Math.max(0, prev + delta));
   };
 
   if (!workout || !activeSession) {
@@ -295,23 +303,25 @@ export default function WorkoutSessionScreen({ route, navigation }: Props) {
         )}
 
         {/* Rest Time Controls */}
-        <View style={styles.restControlsContainer}>
-          <Text style={styles.restControlsLabel}>Default Rest Time: {defaultRestTime}s</Text>
-          <View style={styles.restControlsButtons}>
-            <TouchableOpacity
-              style={styles.restControlButton}
-              onPress={() => adjustRestTime(-5)}
-            >
-              <Text style={styles.restControlButtonText}>- 5s</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.restControlButton}
-              onPress={() => adjustRestTime(5)}
-            >
-              <Text style={styles.restControlButtonText}>+ 5s</Text>
-            </TouchableOpacity>
+        {restTimeRemaining > 0 && (
+          <View style={styles.restControlsContainer}>
+            <Text style={styles.restControlsLabel}>Adjust Active Rest Time</Text>
+            <View style={styles.restControlsButtons}>
+              <TouchableOpacity
+                style={styles.restControlButton}
+                onPress={() => adjustRestTime(-5)}
+              >
+                <Text style={styles.restControlButtonText}>- 5s</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.restControlButton}
+                onPress={() => adjustRestTime(5)}
+              >
+                <Text style={styles.restControlButtonText}>+ 5s</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Navigation Buttons */}
         <View style={styles.navigationContainer}>
