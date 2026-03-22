@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'WorkoutList'>;
 
 export default function WorkoutListScreen({ navigation }: Props) {
   const { workouts, deleteWorkout } = useWorkouts();
+
+  // Disable back navigation on root screen
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+      gestureEnabled: false,
+    });
+  }, [navigation]);
 
   const confirmDelete = (id: string, name: string) => {
     Alert.alert('Delete Workout', `Delete "${name}"?`, [

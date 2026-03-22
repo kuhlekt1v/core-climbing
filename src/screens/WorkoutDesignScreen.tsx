@@ -53,6 +53,53 @@ export default function WorkoutDesignScreen({ navigation, route }: Props) {
     });
   }, [existing, navigation]);
 
+  // Detect unsaved changes and prompt before navigating away
+  useEffect(() => {
+    const hasChanges = () => {
+      // Check if workout name has been entered
+      const hasWorkoutName = workoutName.trim().length > 0;
+
+      // Check if any exercise has been created (has a name)
+      const hasExercises = exercises.some((ex) => ex.name.trim().length > 0);
+
+      // If editing, check if there are any differences from the original
+      if (existing) {
+        const nameChanged = workoutName.trim() !== existing.name;
+        const exercisesChanged = JSON.stringify(exercises) !== JSON.stringify(existing.exercises);
+        return nameChanged || exercisesChanged;
+      }
+
+      // For new workouts, consider it changed if user has entered a name or exercise
+      return hasWorkoutName || hasExercises;
+    };
+
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (!hasChanges()) {
+        // If we don't have unsaved changes, let the user leave normally
+        return;
+      }
+
+      // Prevent default behavior of leaving the screen
+      e.preventDefault();
+
+      // Prompt the user before leaving the screen
+      Alert.alert(
+        'Discard changes?',
+        'You have unsaved changes. Are you sure you want to leave? Your progress has not been saved.',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => {} },
+          {
+            text: 'Discard',
+            style: 'destructive',
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ]
+      );
+    });
+
+    return unsubscribe;
+  }, [navigation, workoutName, exercises, existing]);
+
   const updateExercise = (id: string, updates: Partial<Exercise>) => {
     setExercises((prev) =>
       prev.map((ex) => (ex.id === id ? { ...ex, ...updates } : ex))
