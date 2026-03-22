@@ -45,11 +45,27 @@ export default function WorkoutListScreen({ navigation }: Props) {
               }
               onLongPress={() => confirmDelete(item.id, item.name)}
             >
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              <Text style={styles.cardSubtitle}>
-                {item.exercises.length}{' '}
-                {item.exercises.length === 1 ? 'exercise' : 'exercises'}
-              </Text>
+              <View style={styles.cardBody}>
+                <View>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+                  <Text style={styles.cardSubtitle}>
+                    {item.exercises.length}{' '}
+                    {item.exercises.length === 1 ? 'exercise' : 'exercises'}
+                  </Text>
+                </View>
+                {item.exercises.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.startBtn}
+                    onPress={() =>
+                      navigation.navigate('WorkoutSession', {
+                        workoutId: item.id,
+                      })
+                    }
+                  >
+                    <Text style={styles.startBtnText}>▶ Start</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </TouchableOpacity>
           )}
         />
@@ -82,8 +98,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+  cardBody: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   cardTitle: { fontSize: 18, fontWeight: '600', color: '#222' },
   cardSubtitle: { fontSize: 14, color: '#888', marginTop: 4 },
+  startBtn: {
+    backgroundColor: '#4a90d9',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  startBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
   addButton: {
     backgroundColor: '#4a90d9',
     margin: 16,

@@ -3,10 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WorkoutListScreen from '../screens/WorkoutListScreen';
 import WorkoutDesignScreen from '../screens/WorkoutDesignScreen';
+import WorkoutSessionScreen from '../screens/WorkoutSessionScreen';
 
 export type RootStackParamList = {
   WorkoutList: undefined;
   WorkoutDesign: { workoutId?: string };
+  WorkoutSession: { workoutId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +33,11 @@ export default function AppNavigator() {
           name="WorkoutDesign"
           component={WorkoutDesignScreen}
           options={{ title: 'Design Workout' }}
+        />
+        <Stack.Screen
+          name="WorkoutSession"
+          component={WorkoutSessionScreen}
+          options={{ title: 'Workout Session' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
