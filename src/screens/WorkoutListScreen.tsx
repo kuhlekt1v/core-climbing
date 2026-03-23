@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,11 +16,23 @@ type Props = NativeStackScreenProps<RootStackParamList, 'WorkoutList'>;
 export default function WorkoutListScreen({ navigation }: Props) {
   const { workouts, deleteWorkout } = useWorkouts();
 
+  // Disable back navigation on root screen
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+      gestureEnabled: false,
+    });
+  }, [navigation]);
+
   const confirmDelete = (id: string, name: string) => {
     Alert.alert('Delete Workout', `Delete "${name}"?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => deleteWorkout(id) },
     ]);
+  };
+
+  const handleStartWorkout = (workoutId: string) => {
+    navigation.navigate('WorkoutSession', { workoutId });
   };
 
   return (
@@ -38,19 +50,27 @@ export default function WorkoutListScreen({ navigation }: Props) {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() =>
-                navigation.navigate('WorkoutDesign', { workoutId: item.id })
-              }
-              onLongPress={() => confirmDelete(item.id, item.name)}
-            >
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              <Text style={styles.cardSubtitle}>
-                {item.exercises.length}{' '}
-                {item.exercises.length === 1 ? 'exercise' : 'exercises'}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.card}>
+              <TouchableOpacity
+                style={styles.cardHeader}
+                onPress={() =>
+                  navigation.navigate('WorkoutDesign', { workoutId: item.id })
+                }
+                onLongPress={() => confirmDelete(item.id, item.name)}
+              >
+                <Text style={styles.cardTitle}>{item.name}</Text>
+                <Text style={styles.cardSubtitle}>
+                  {item.exercises.length}{' '}
+                  {item.exercises.length === 1 ? 'exercise' : 'exercises'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.startButton}
+                onPress={() => handleStartWorkout(item.id)}
+              >
+                <Text style={styles.startButtonText}>Start Workout</Text>
+              </TouchableOpacity>
+            </View>
           )}
         />
       )}
@@ -74,7 +94,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 16,
     marginBottom: 12,
     shadowColor: '#000',
     shadowOpacity: 0.05,
@@ -82,8 +101,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+  cardHeader: {
+    padding: 16,
+  },
   cardTitle: { fontSize: 18, fontWeight: '600', color: '#222' },
   cardSubtitle: { fontSize: 14, color: '#888', marginTop: 4 },
+  startButton: {
+    backgroundColor: '#4caf50',
+    padding: 12,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    alignItems: 'center',
+  },
+  startButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   addButton: {
     backgroundColor: '#4a90d9',
     margin: 16,
