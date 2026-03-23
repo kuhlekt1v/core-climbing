@@ -12,6 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { usePreventRemove } from '@react-navigation/native';
 import { useWorkouts } from '../context/WorkoutContext';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import type { Exercise } from '../types';
@@ -46,59 +47,54 @@ export default function WorkoutDesignScreen({ navigation, route }: Props) {
   const [exercises, setExercises] = useState<Exercise[]>(
     existing?.exercises ?? [createBlankExercise()]
   );
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
       title: existing ? 'Edit Workout' : 'New Workout',
+      headerBackButtonMenuEnabled: false, // Required for usePreventRemove
     });
   }, [existing, navigation]);
 
-  // Detect unsaved changes and prompt before navigating away
-  useEffect(() => {
-    const hasChanges = () => {
-      // Check if workout name has been entered
-      const hasWorkoutName = workoutName.trim().length > 0;
+  // Check if there are unsaved changes
+  const hasChanges = () => {
+    // If we're in the process of saving, don't prevent navigation
+    if (isSaving) {
+      return false;
+    }
 
-      // Check if any exercise has been created (has a name)
-      const hasExercises = exercises.some((ex) => ex.name.trim().length > 0);
+    // Check if workout name has been entered
+    const hasWorkoutName = workoutName.trim().length > 0;
 
-      // If editing, check if there are any differences from the original
-      if (existing) {
-        const nameChanged = workoutName.trim() !== existing.name;
-        const exercisesChanged = JSON.stringify(exercises) !== JSON.stringify(existing.exercises);
-        return nameChanged || exercisesChanged;
-      }
+    // Check if any exercise has been created (has a name)
+    const hasExercises = exercises.some((ex) => ex.name.trim().length > 0);
 
-      // For new workouts, consider it changed if user has entered a name or exercise
-      return hasWorkoutName || hasExercises;
-    };
+    // If editing, check if there are any differences from the original
+    if (existing) {
+      const nameChanged = workoutName.trim() !== existing.name;
+      const exercisesChanged = JSON.stringify(exercises) !== JSON.stringify(existing.exercises);
+      return nameChanged || exercisesChanged;
+    }
 
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (!hasChanges()) {
-        // If we don't have unsaved changes, let the user leave normally
-        return;
-      }
+    // For new workouts, consider it changed if user has entered a name or exercise
+    return hasWorkoutName || hasExercises;
+  };
 
-      // Prevent default behavior of leaving the screen
-      e.preventDefault();
-
-      // Prompt the user before leaving the screen
-      Alert.alert(
-        'Discard changes?',
-        'You have unsaved changes. Are you sure you want to leave? Your progress has not been saved.',
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => {} },
-          {
-            text: 'Discard',
-            style: 'destructive',
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ]
-      );
-    });
-
-    return unsubscribe;
-  }, [navigation, workoutName, exercises, existing]);
+  // Use the recommended usePreventRemove hook instead of beforeRemove listener
+  usePreventRemove(hasChanges(), ({ data }) => {
+    Alert.alert(
+      'Discard changes?',
+      'You have unsaved changes. Are you sure you want to leave? Your progress has not been saved.',
+      [
+        { text: 'Cancel', style: 'cancel', onPress: () => {} },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => navigation.dispatch(data.action),
+        },
+      ]
+    );
+  });
 
   const updateExercise = (id: string, updates: Partial<Exercise>) => {
     setExercises((prev) =>
@@ -141,6 +137,8 @@ export default function WorkoutDesignScreen({ navigation, route }: Props) {
       addWorkout(workout);
     }
 
+    // Set isSaving flag to prevent the unsaved changes prompt
+    setIsSaving(true);
     navigation.goBack();
   };
 
